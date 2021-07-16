@@ -53,3 +53,7 @@ def connectAndSendMessage(DestinationDeviceUUID, message):
 	peripheral.writeCharacteristic(data_handle, message, withResponse=True)
         print "Info: Sent message -- " + message 			
 		
+
+# Test function 
+def BLEControllerTest(): 
+    connectAndSendMessage("a5089693-697f-45a7-a229-55d37e1573ee", "Positive")
