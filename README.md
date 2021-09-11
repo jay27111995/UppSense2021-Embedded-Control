@@ -1,3 +1,5 @@
+# Embedded system for UppSense H1N1 biosensor 
+
 Embedded system developed for InfluSense 1.0 - H1N1 Biosensor: developed by UppSense, Uppsala University, Sweden 
 
 UpSense team and project info:
@@ -7,7 +9,7 @@ Facebook: https://www.facebook.com/UppsalaSensUs
 Instagram: https://www.instagram.com/uppsalasensus/ 
 Sensus Competition: https://digital.sensus.org/teams/4 
 
-Read team result document in repository for more info. 
+### Read team result document in repository for more info. 
 
 Description: 
 Platform: RaspberryPI 
