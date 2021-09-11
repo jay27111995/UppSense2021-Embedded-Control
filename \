@@ -1,0 +1,145 @@
+# Authors: Yifan Liu, Jayendra Ellamathy 
+# 
+# Date: 23-07-2021
+
+from tkinter import * 
+from readQRandSendResult import readQRCodeAndSendResult
+from StateMachine import StateMachine
+
+import cv2 
+import numpy as np
+import PIL.Image, PIL.ImageTk
+
+
+# Main window 
+class Window(Frame):
+
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.master = master
+        
+        self.sm = StateMachine("Test")
+        
+        self.cap = None 
+        self.ResultFrame = None 
+        self.canvas = None 
+        self.width = None
+        self.height = None
+        self.photo = None
+
+        self.init_window()
+
+
+    #Creation of init_window
+    def init_window(self):
+        
+        # Title of our master widget
+        self.master.title("InfluSense 1.0 - H1N1 Biosensor - Developed by UppSense from Uppsala University, Sweden")
+        
+        # Note: height, width, placements measured in text units 
+
+
+        # Main Title 
+        TitleFrame = Frame()
+
+        MainTitle = Label(text = "InfluSense 1.0 - H1N1 Biosensor", 
+                fg = "white", bg = "purple", 
+                height = 1, 
+                master=TitleFrame, 
+                font = ("Helvetica", 20, "bold"))
+        MainTitle.pack()
+
+
+        # Instructions 
+        InstructionsFrame = Frame()
+
+        InstructionsTitle = Label(text = "Instructions", 
+                fg = "white", bg = "purple", 
+                height = 1, 
+                master = InstructionsFrame, 
+                font = ("Arial", 18, "bold"))
+        InstructionsTitle.pack(fill=X) # Fill along X axis: 
+                                       # Cover all spaces along the X axis of the frame.
+                                                
+        Instructions = Label(text = """1. Insert patient saliva at ... \n2. Click start measuremnt button\n3. The status window shows the current steps\nand indicates completed once done\n4. Click the send result to start scanning the QR code\n5. Once the QR code is scanned, wait for the result to be sent\n6. Restart from step 2 for next measurement""", 
+                                       master = InstructionsFrame,
+                                       fg = "white", bg = "purple", 
+                                       font = ("Arial", 12), 
+                                       justify=LEFT) # Text Alignment 
+        Instructions.pack(ipadx=10)  # Provide padding        
+
+
+        # Buttons 
+        ButtonsFrame = Frame()
+
+        SendMeasurement = Button(text="Start Measurement", 
+                height=3, 
+                master = ButtonsFrame,
+                bg="Blue", fg="white", 
+                font = ("Arial", 15, "bold"),
+                command = self.SendMeasurement)
+        SendMeasurement.pack(side=LEFT, ipadx=10) 
+
+
+        SendResult = Button(text="Send result to patient", 
+                height=3, 
+                master = ButtonsFrame,
+                bg="Blue", fg="white", 
+                font = ("Arial", 15, "bold"),
+                command = self.SendResult)
+        SendResult.pack(side=LEFT, ipadx=10) 
+        
+        
+        # Results and camera window 
+        self.cap = cv2.VideoCapture(0) # Open Pi Camera  
+        self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        self.ResultFrame = Frame()
+
+        self.canvas = Canvas(self.ResultFrame, width=300, height=300, bg="purple")
+        self.canvas.pack()
+         
+        self.Camera_window()
+
+
+        # Arrangement of frames 
+        TitleFrame.pack() 
+        InstructionsFrame.pack(side=LEFT, anchor=NW) # Place this frame at the left side of the window 
+        
+        ButtonsFrame.config(bg="purple")
+        ButtonsFrame.pack(ipady=40, side=BOTTOM, anchor=W)
+            
+        self.ResultFrame.pack(side=RIGHT)
+
+        # Allowing the widget to take the full space of the root window
+        self.pack(fill=BOTH, expand=1)
+ 
+
+    # ~~~~~~~~~~~~~~~~~ Button event functions ~~~~~~~~~~~~~~~~~ #
+    def SendResult(self):
+        readQRCodeAndSendResult(1) # 1 == "-ve", 0 == "+ve"
+        
+    def SendMeasurement(self):
+        self.sm.detect() 
+        
+    def Camera_window(self):
+        # Capture frame 
+        ret, frame = self.cap.read()
+        
+        # frame2 = cv2.resize(frame, (300, 300))
+        # self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+        # self.canvas.create_image(0, 0, image=self.photo, anchor=CENTER)
+        # self.ResultFrame.after(20, self.Camera_window)
+
+# Main Window 
+root = Tk()
+
+# Window configurations  
+root.geometry("800x800") # Change to screen size 
+root.configure(bg='purple')
+
+# Creation of a window instance 
+appWindow = Window(root)
+
+# Main loop 
+root.mainloop()
